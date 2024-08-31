@@ -1,0 +1,17 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"module": "CommonJS", // Use ESNext or ES6 for ESM
+		"target": "ESNext", // Target modern JS
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"skipLibCheck": true,
+		"moduleResolution": "node",
+		"experimentalDecorators": true, // Enable decorators
+		"emitDecoratorMetadata": true, // Emit metadata for decorators
+		"esModuleInterop": true // Enable ES Module interop
+	},
+	"include": ["./src"],
+	"exclude": ["dist", "build"]
+}

@@ -1,0 +1,23 @@
+{
+	"name": "@comeback/redis",
+	"version": "0.0.0",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"source": "./src/index.ts",
+	"scripts": {
+		"clean": "rm -rf .turbo && rm -rf node_modules",
+		"lint": "eslint . --quiet",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@comeback/errors": "*",
+		"@comeback/logger": "*",
+		"@comeback/schema": "*",
+		"@comeback/types": "*",
+		"@comeback/utils": "*",
+		"ioredis": "^5.4.1"
+	},
+	"devDependencies": {
+		"tsup": "^8.2.4"
+	}
+}

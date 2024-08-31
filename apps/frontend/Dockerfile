@@ -1,0 +1,29 @@
+# Use the official Node.js image as the base image
+FROM node:18 AS base
+
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies using Yarn
+COPY ../package.json ../yarn.lock ./
+RUN yarn install --frozen-lockfile --ignore-platform
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the Vite React app
+WORKDIR /app/apps/frontend
+RUN yarn build
+
+# Use a lightweight web server to serve the built files
+FROM nginx:alpine
+
+# Copy the build output to the Nginx directory
+COPY --from=base /app/apps/frontend/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]

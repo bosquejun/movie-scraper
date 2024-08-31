@@ -1,0 +1,19 @@
+{
+	"name": "@comeback/model",
+	"version": "0.0.0",
+	"private": true,
+	"devDependencies": {
+		"@comeback/tsconfig": "*",
+		"@comeback/utils": "*",
+		"@types/node": "^22.5.0",
+		"@types/sequelize": "^4.28.20"
+	},
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"source": "./src/index.ts",
+	"dependencies": {
+		"pg": "^8.12.0",
+		"pg-hstore": "^2.3.4",
+		"sequelize": "^6.37.3"
+	}
+}

@@ -1,0 +1,42 @@
+[
+	{
+		"title": "Casper",
+		"sourceUrls": [
+			"https://www.imdb.com/title/tt0112642",
+			"https://www.rottentomatoes.com/m/casper",
+			"https://www.metacritic.com/movie/casper/"
+		]
+	},
+	{
+		"title": "Drop Dead Fred",
+		"sourceUrls": [
+			"https://www.imdb.com/title/tt0101775",
+			"https://www.rottentomatoes.com/m/drop_dead_fred",
+			"https://www.metacritic.com/movie/drop-dead-fred/"
+		]
+	},
+	{
+		"title": "Dumb and Dumber",
+		"sourceUrls": [
+			"https://www.rottentomatoes.com/m/dumb_and_dumber",
+			"https://www.imdb.com/title/tt0109686",
+			"https://www.metacritic.com/movie/dumb-and-dumber/"
+		]
+	},
+	{
+		"title": "Stand by Me",
+		"sourceUrls": [
+			"https://www.metacritic.com/movie/stand-by-me/",
+			"https://www.imdb.com/title/tt0092005",
+			"https://www.rottentomatoes.com/m/stand_by_me_1986"
+		]
+	},
+	{
+		"title": "Toy Story",
+		"sourceUrls": [
+			"https://www.metacritic.com/movie/toy-story/",
+			"https://www.imdb.com/title/tt0114709/",
+			"https://www.rottentomatoes.com/m/toy_story"
+		]
+	}
+]

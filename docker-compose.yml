@@ -1,0 +1,85 @@
+services:
+    api:
+        build:
+            context: . # Uses the root of the monorepo as the context
+            dockerfile: ./apps/api/Dockerfile # Refers to the Dockerfile in the root
+        volumes:
+            - .:/usr/src/app # Mounts the entire monorepo for live development
+            - shared_node_modules:/app/node_modules
+        working_dir: /usr/src/app/apps/api
+        ports:
+            - "${API_PORT}"
+        networks:
+            - private-network
+
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            LOG_LEVEL: ${API_LOG_LEVEL}
+            IMDB_RATING_URL: ${API_IMDB_RATING_URL}
+            ROTTEN_TOMATOES_URL: ${API_ROTTEN_TOMATOES_URL}
+            META_CRITIC_URL: ${API_META_CRITIC_URL}
+            DB_USER: ${DB_USER}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_NAME: ${API_DB_NAME}
+            DB_HOST: db
+            DB_PORT: ${DB_PORT}
+            FRONTEND_URL: frontend
+            REDIS_HOST: redis
+            REDIS_PORT: ${REDIS_PORT}
+            JWT_SECRET: ${API_JWT_SECRET}
+            JWT_PUBLIC_KEY: ${API_JWT_PUBLIC_KEY}
+        depends_on:
+            - db
+            - redis
+    # frontend:
+    #     build:
+    #         context: .
+    #         dockerfile: ./apps/frontend/Dockerfile
+    #     ports:
+    #         - "80:80"
+    #     volumes:
+    #         - .:/app # Mounts the entire monorepo for live development
+    #         - shared_node_modules:/app/node_modules
+    #     environment:
+    #         NODE_ENV: ${NODE_ENV}
+    #         VITE_LOG_LEVEL: ${API_LOG_LEVEL}
+    #         VITE_API_BASE_URL: "http://api:${API_PORT}"
+    #         VITE_API_USER: ${FRONTEND_API_USER}
+    #         VITE_API_PASSWORD: ${FRONTEND_API_USER}
+    #     networks:
+    #         - comeback-network
+    #     depends_on:
+    #         - api
+    db:
+        image: postgres:15
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: api
+
+        volumes:
+            - db_data:/var/lib/postgresql/data
+            - ./local/db_init/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql
+            - ./local/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+        ports:
+            - "${DB_PORT}:${DB_PORT}"
+        networks:
+            - private-network
+    redis:
+        image: "redis:latest"
+        ports:
+            - "${REDIS_PORT}:6379"
+        volumes:
+            - redis_data:/data
+        networks:
+            - private-network
+        command: ["redis-server", "--appendonly", "yes"]
+volumes:
+    db_data:
+    redis_data:
+    shared_node_modules:
+
+networks:
+    main-network:
+    private-network:
+        driver: bridge
