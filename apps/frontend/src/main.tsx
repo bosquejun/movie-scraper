@@ -2,6 +2,7 @@ import { ComebackApiProvider } from "@comeback/react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import App from "./App.tsx";
+import ErrorBoundary from "./ErrorBoundary.tsx";
 import "./index.css";
 
 const apiBaseUrl = import.meta.env["VITE_API_BASE_URL"] || "";
@@ -9,17 +10,7 @@ const apiBaseUrl = import.meta.env["VITE_API_BASE_URL"] || "";
 console.log("Connecting to API endpoint:", apiBaseUrl);
 
 createRoot(document.getElementById("root")!).render(
-	<>
-		<ComebackApiProvider
-			apiBaseUrl={apiBaseUrl}
-			auth={{
-				email: import.meta.env["VITE_API_USER"] || "",
-				password: import.meta.env["VITE_API_PASSWORD"] || "",
-			}}
-		>
-			<App />
-		</ComebackApiProvider>
-
+	<ErrorBoundary>
 		<Toaster
 			theme='dark'
 			toastOptions={{
@@ -34,5 +25,14 @@ createRoot(document.getElementById("root")!).render(
 				},
 			}}
 		/>
-	</>
+		<ComebackApiProvider
+			apiBaseUrl={apiBaseUrl}
+			auth={{
+				email: import.meta.env["VITE_API_USER"] || "",
+				password: import.meta.env["VITE_API_PASSWORD"] || "",
+			}}
+		>
+			<App />
+		</ComebackApiProvider>
+	</ErrorBoundary>
 );

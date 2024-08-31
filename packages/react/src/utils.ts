@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 export function getApiError(error: unknown) {
 	const errorData = {
@@ -12,4 +12,10 @@ export function getApiError(error: unknown) {
 	}
 
 	return errorData;
+}
+
+export function getDefaultAxiosConfig(): AxiosRequestConfig {
+	return {
+		timeout: 10_000,
+	};
 }

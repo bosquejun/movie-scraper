@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { useCallback, useState } from "react";
-import { getApiError } from "../utils";
+import { getApiError, getDefaultAxiosConfig } from "../utils";
 
 interface MutateState<T> {
 	data: T | null;
@@ -15,9 +15,7 @@ export function useMutate<TRequestData, TResponse = any>(
 	config?: AxiosRequestConfig
 ): MutateState<TResponse> & {
 	mutate: (requestData: TRequestData) => void;
-	mutateAsync: (
-		requestData: TRequestData
-	) => Promise<{
+	mutateAsync: (requestData: TRequestData) => Promise<{
 		data: TResponse | null;
 		loading: boolean;
 		error: null | string;
@@ -25,7 +23,7 @@ export function useMutate<TRequestData, TResponse = any>(
 } {
 	const [state, setState] = useState<MutateState<TResponse>>({
 		data: null,
-		loading: true,
+		loading: false,
 		error: null,
 	});
 
@@ -36,7 +34,10 @@ export function useMutate<TRequestData, TResponse = any>(
 				const response: AxiosResponse<TResponse> = await axios[method](
 					url,
 					requestData,
-					config
+					{
+						...getDefaultAxiosConfig(),
+						...config,
+					}
 				);
 				setState({ data: response.data, loading: false, error: null });
 				return { data: response.data, loading: false, error: null };

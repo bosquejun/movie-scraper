@@ -12,7 +12,16 @@ services:
         networks:
             - private-network
             - main-network
-
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "wget --spider --quiet http://localhost:${API_PORT}/health || exit 1",
+                ]
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 5s
         environment:
             NODE_ENV: ${NODE_ENV}
             LOG_LEVEL: ${API_LOG_LEVEL}
@@ -30,8 +39,10 @@ services:
             JWT_SECRET: ${API_JWT_SECRET}
             JWT_PUBLIC_KEY: ${API_JWT_PUBLIC_KEY}
         depends_on:
-            - db
-            - redis
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
     frontend:
         build:
             context: .
@@ -42,6 +53,16 @@ services:
             - .:/usr/src/app # Mounts the entire monorepo for live development
             - shared_node_modules:/app/node_modules
         working_dir: /usr/src/app/apps/frontend
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl --fail http://frontend:${FRONTEND_PORT} || exit 1",
+                ]
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 5s
         environment:
             NODE_PORT: ${FRONTEND_PORT}
             NODE_ENV: ${NODE_ENV}
@@ -52,14 +73,23 @@ services:
         networks:
             - main-network
         depends_on:
-            - api
+            api:
+                condition: service_healthy
+
     db:
         image: postgres:15
         environment:
             POSTGRES_USER: ${DB_USER}
             POSTGRES_PASSWORD: ${DB_PASSWORD}
             POSTGRES_DB: api
+            POSTGRES_PORT: ${DB_PORT}
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U '${DB_USER} ' -d ${API_DB_NAME}"]
 
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 5s
         volumes:
             - db_data:/var/lib/postgresql/data
             - ./local/db_init/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql
@@ -70,6 +100,12 @@ services:
             - private-network
     redis:
         image: "redis:latest"
+        healthcheck:
+            test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 5s
         ports:
             - "${REDIS_PORT}:6379"
         volumes:

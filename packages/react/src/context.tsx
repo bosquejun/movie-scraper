@@ -6,6 +6,7 @@ type ApiContext = {
 	version: "v1";
 	getApiBaseUrl: () => string;
 	getClientCredentials: () => ComebackProviderProps["auth"];
+	isHealthy: boolean;
 };
 
 const ApiContext = createContext<ApiContext | null>(null);

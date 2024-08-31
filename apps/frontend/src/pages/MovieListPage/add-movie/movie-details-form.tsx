@@ -10,22 +10,29 @@ export function MovieDetailsForm({
 	refetchMovies: () => void;
 }) {
 	const { token } = useAuthContext();
-	const { mutateAsync } = usePostMovieSources(token!);
+	const { mutateAsync, loading } = usePostMovieSources(token!);
 
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const formProps = Object.fromEntries(formData);
 
+		if (Object.keys(formProps).every((k) => formProps[k] === "")) return;
+
 		await toast.promise(
-			mutateAsync({
-				title: formProps["movieTitle"] as string,
-				sourceUrls: [
-					formProps["imdbUrl"] as string,
-					formProps["rottenTomatoesUrl"] as string,
-					formProps["metaCriticUrl"] as string,
-				].filter(Boolean),
-			}),
+			async () => {
+				const response = await mutateAsync({
+					title: formProps["movieTitle"] as string,
+					sourceUrls: [
+						formProps["imdbUrl"] as string,
+						formProps["rottenTomatoesUrl"] as string,
+						formProps["metaCriticUrl"] as string,
+					].filter(Boolean),
+				});
+				if (response.error) {
+					throw response;
+				}
+			},
 			{
 				loading: "Scraping movie information...",
 				error(data) {
@@ -50,8 +57,7 @@ export function MovieDetailsForm({
 				</h2>
 				<div className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
 					<dt className='text-sm font-medium leading-6 text-slate-300 flex items-center'>
-						Title{"  "}
-						<span className='text-red-500'>*</span>
+						Title
 					</dt>
 					<dd className='mt-1 text-sm leading-6 text-slate-400  sm:col-span-2 sm:mt-0'>
 						<TextInput
@@ -122,6 +128,7 @@ export function MovieDetailsForm({
 				</div>
 			</div>
 			<Button
+				isDisabled={loading}
 				type='submit'
 				className='h-10 w-full !justify-center text-center mt-5'
 			>

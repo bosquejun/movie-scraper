@@ -36,8 +36,13 @@ export function AuthProvider({
 	renderForm?: ReactNode;
 	checkRoles?: UserRoles[];
 }) {
-	const { fetchTokenAsync, error, fetchToken, loading, token } =
-		useAccessToken();
+	const {
+		fetchTokenAsync,
+		error,
+		fetchToken,
+		loading,
+		token: loginToken,
+	} = useAccessToken();
 	const [state, setState] = useState<
 		Omit<
 			ReturnType<typeof useAccessToken>,
@@ -51,7 +56,7 @@ export function AuthProvider({
 	const checkToken = useCheckToken(state.token);
 
 	useEffect(() => {
-		if (checkToken.loading) return;
+		if (checkToken.loading || loginToken) return;
 		let errorMessage = checkToken.error;
 		let token = state.token;
 		if (checkToken.jwtPayload && checkRoles) {
@@ -76,21 +81,25 @@ export function AuthProvider({
 			token,
 			error: errorMessage,
 		}));
-	}, [checkToken.loading]);
+	}, [checkToken.loading, state.token]);
 
-	const isAuthenticated = Boolean(!state.loading && state.token);
+	const isAuthenticated = Boolean(!checkToken.loading && state.token);
 
 	useEffect(() => {
-		if (loading) return;
-		if (token && storageKey) {
-			window.localStorage.setItem(getAuthStorageKey(storageKey), token);
+		if (loading || !loginToken) return;
+		if (storageKey) {
+			window.localStorage.setItem(
+				getAuthStorageKey(storageKey),
+				loginToken
+			);
 		}
 		setState((prev) => ({
 			...prev,
-			token,
+			token: loginToken,
+			loading: false,
 			error,
 		}));
-	}, [loading, token]);
+	}, [loading, loginToken]);
 
 	useEffect(() => {
 		if (storageKey) {
@@ -99,6 +108,7 @@ export function AuthProvider({
 
 			setState((prev) => ({
 				...prev,
+				loading: false,
 				token: persistedToken,
 			}));
 		}

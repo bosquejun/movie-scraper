@@ -6,10 +6,36 @@
 A **PERN** stack JavaScript solution for comparing movie ratings, built with a Monorepo structure.
 
 
-## Table of Contents
+# Table of Contents
+- [Movie Scraping Project](#movie-scraping-project)
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Monorepo Structure](#monorepo-structure)
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation-1)
+  - [Quick Setup (Dockerized)](#quick-setup-dockerized)
+  - [Running from the Host System](#running-from-the-host-system)
+  - [Database (Migration/Seed)](#database-migrationseed)
+- [Project Structure](#project-structure)
+  - [Apps and Packages](#apps-and-packages)
+    - [Applications](#applications)
+    - [Packages](#packages)
+- [Designs and Architectures](#designs-and-architectures)
+  - [Frontend](#frontend)
+    - [Atomic Design Pattern](#atomic-design-pattern)
+    - [Backend Providers and Hooks](#backend-providers-and-hooks)
+  - [Backend](#backend)
+    - [RESTful API Design](#restful-api-design)
+    - [Object-Based Routes Pattern](#object-based-routes-pattern)
+    - [Authentication](#authentication)
+    - [Caching Mechanism](#caching-mechanism)
+    - [Cache Invalidations](#cache-invalidations)
+    - [Scalability Consideration](#scalability-consideration)
+- [Other Considerations](#other-considerations)
 
 
-## Introduction
+# Introduction
 
 The Movie Scraping Project is a robust solution designed to compare movie ratings across 3 major platforms ([IMDb](https://www.imdb.com), [Rotten Tomatoes](https://www.rottentomatoes.com), [Meta Critic](https://www.metacritic.com)). Built using the PERN stack (PostgreSQL, Express.js, React, Node.js), this project leverages a monorepo structure to maintain a seamless integration between frontend and backend components.
 
@@ -20,22 +46,22 @@ Key Features:
 - **Monorepo Organization**: Manage both frontend and backend applications in a single repository, simplifying development, testing, and deployment.
 
 
-## Monorepo Structure
+# Monorepo Structure
 
 This project adopts a monorepo approach to maximize the benefits of separation of concerns while ensuring seamless code and implementation sharing across multiple apps and packages. This structure enables efficient collaboration, consistency, and reuse of components, making it easier to manage and scale the project.
 
-## Installation
+# Installation
 
 To get started with the Movie Scraping Project, follow these instructions to set up the monorepo and run both frontend and backend applications.
 
-### Prerequisites
+## Prerequisites
 Before you begin, make sure you have the following installed:
 
 - Node.js (v18.x or higher) - Download [Node.js](https://nodejs.org/en/download/package-manager)
 - Yarn or npm - Install Yarn (if you prefer Yarn over npm)
 - Docker (Containerize setup and local live development) - Install Docker
 
-### Installation
+## Installation
 
 1. Clone the Repository:
 
@@ -65,7 +91,7 @@ Before you begin, make sure you have the following installed:
     cp ./.env.example ./.env
     ```
 
-### Quick Setup (Dockerized)
+## Quick Setup (Dockerized)
 
 This project utilizes Docker to streamline the setup process, handling everything from database and cache services (Postgres and Redis) to application installation and execution.
 
@@ -77,7 +103,7 @@ Run:
 docker compose run api yarn install && docker compose up -d
 ```
 
-### Running from the Host System
+## Running from the Host System
 
 Alternatively, you can run the frontend and API applications directly from your host machine, outside of Docker. To do this, you can start both applications simultaneously from the root project directory using the Turbo command:
 
@@ -101,17 +127,44 @@ or  you can run each application individually by navigating to its respective di
 
 > Troubleshoot: If you want to switch the Frontend app from Docker to Host system or vice versa, you may need to run `yarn install` (targeting the host) or `docker compose run frontend yarn install` (targeting the docker) to resolve the platform issue with `vite+@rollup`
 
-## Project Structure
+## Database (Migration/Seed)
+
+Database tables and some predefined data are being seeded on [setup]((#quick-setup-dockerized)). This includes the following tables:
+
+- Movie
+- MovieRating
+- User
+- UserAclRole
+- UserRole
+
+Also, 2 entry users are added for easy setup and access:
+
+- System user (Used by the frontend to access backend service [list movies]):
+    ```json
+    {
+        "email": "system@comeback.com",
+        "password": "password@1234!"
+    }
+    ```
+- Admin user (To use for adding new movie):
+    ```json
+    {
+        "email": "admin@comeback.com",
+        "password": "password@1234!"
+    }
+    ```
+
+# Project Structure
 
 This project includes the following packages/apps:
 
-### Apps and Packages
+## Apps and Packages
 
-#### Applications
+### Applications
 - `api`: A RESTful API backend application built with Node.js, Express.js, and PostgreSQL, complemented by Redis for caching.
 - `frontend`: A dynamic web application developed with React.js and styled using TailwindCSS.
 
-#### Packages
+### Packages
 - `@comeback/errors`: A package for handling various types of errors, including application-level and HTTP-level errors.
 - `@comeback/express-lib`: A library designed for managing Express.js-related code and functionalities, primarily used by the backend api application.
 - `@comeback/logger` - A versatile logging package for managing logging across both frontend and backend applications.
@@ -122,13 +175,13 @@ This project includes the following packages/apps:
 - `@comeback/ui` - A React package for shared UI components and elements, providing a foundation for consistent user interfaces.
 
 
-## Designs and Architectures
+# Designs and Architectures
 
-### Frontend
+## Frontend
 
 The main ReactJS application is a very small app that doesn't need any design-patterns as it is using the `@comeback/ui` + `@comeback/react` packages for components and backend  integrations.
 
-#### Atomic Design Pattern
+### Atomic Design Pattern
 
 `@comeback/ui` follows the *Atomic Design Pattern* to create a library of reusable and modular UI components. By using this pattern, the package benefits from:
 
@@ -142,7 +195,7 @@ The main ReactJS application is a very small app that doesn't need any design-pa
 
 - **Efficiency**: Speeds up development by leveraging pre-defined, reusable components that can be quickly assembled to build new features or screens.
 
-#### Backend Providers and Hooks
+### Backend Providers and Hooks
 
 `@comeback/react` offers a suite of contexts, providers, and custom React hooks designed to streamline integration with the api application. This package simplifies interaction with the backend by:
 
@@ -152,33 +205,33 @@ The main ReactJS application is a very small app that doesn't need any design-pa
 
 - **Streamlining Integration**: Providing reusable components and hooks to seamlessly connect the frontend with backend services, reducing boilerplate code and enhancing development productivity.
 
-### Backend
+## Backend
 
-#### RESTful API Design
+### RESTful API Design
 
 Designs APIs around standard HTTP methods (GET, POST, PUT, DELETE) and resources, making them intuitive and easy to use. Resources are represented by URLs, and operations on these resources are performed using the corresponding HTTP methods, which enhances clarity and consistency in API interactions.
 
-#### Object-Based Routes Pattern
+### Object-Based Routes Pattern
 
 The api application employs an Object-Based Routes Pattern to organize API routes and endpoints. In this pattern, each route is defined as a key consisting of a combination of `method` and `endpoint`, with associated values being the route handlers. These `handlers` include the main logic as well as any `middleware functions`, such as authentication and caching, which are applied to the routes. This approach streamlines route management and enhances code organization.
 
-#### Authentication
+### Authentication
 
 The backend API employs JWT-based authentication combined with basic role-based permissions. This setup secures endpoints by ensuring that only authorized users and systems can access them, providing controlled access based on user roles and permissions.
 
-#### Caching Mechanism
+### Caching Mechanism
 
 The backend utilizes Redis to support caching mechanisms and reduce database load, particularly for frequently accessed endpoints. An Express middleware is provided with optional configuration to cache responses for specific routes, enhancing performance and scalability.
 
-#### Cache Invalidations
+### Cache Invalidations
 
 In addition to the default or explicitly set `TTL` (Time-To-Live) values for route endpoint caching, the system includes mechanisms to invalidate cached data across various parts of the application. For instance, when data is mutated (`created or updated`), the system uses `Sequelize Hooks Events` to listen for specific events and trigger cache invalidation, ensuring that outdated data is removed and the cache remains current.
 
-#### Scalability Consideration
+### Scalability Consideration
 
 The backend API is designed as a `stateless` application, making it well-suited for `horizontal scaling` by increasing the number of application containers. With `Redis` serving as a centralized caching layer, all instances of the application share the same cache. This ensures that `cache invalidation` is effectively synchronized across all instances, maintaining consistency and performance as the application scales.
 
-### Other Considerations
+# Other Considerations
 
 - **What data is stored?**
 
@@ -213,3 +266,7 @@ The backend API is designed as a `stateless` application, making it well-suited 
     - **Centralized Error Handling**: The backend API uses middleware to centralize error handling. This approach captures and processes errors uniformly, allowing for consistent error responses and logging throughout the application.
 
    - **Centralized Schema Definitions**: The platform utilizes centralized schemas defined with Typebox to ensure type safety and consistency across both frontend and backend applications. This approach standardizes data structures and validation rules, promoting uniformity and reducing discrepancies throughout the platform. By using a shared schema definition, the system ensures that data adheres to the same format and constraints, enhancing data integrity and simplifying maintenance.
+
+
+
+

@@ -14,7 +14,7 @@ type DefaultOptions = {
 
 export function useMovies(options: DefaultOptions = { pageSize: 5 }) {
 	const context = useComebackApi();
-	const { token, loading } = useAccessToken(true);
+	const { token, loading } = useAccessToken(context.isHealthy);
 	const [state, setState] = useState<{
 		movies: ListMovieSchemaResponse["data"];
 		error: string | null;
