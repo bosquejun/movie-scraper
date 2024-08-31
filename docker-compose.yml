@@ -8,9 +8,10 @@ services:
             - shared_node_modules:/app/node_modules
         working_dir: /usr/src/app/apps/api
         ports:
-            - "${API_PORT}"
+            - "${API_PORT}:${API_PORT}"
         networks:
             - private-network
+            - main-network
 
         environment:
             NODE_ENV: ${NODE_ENV}
@@ -23,7 +24,7 @@ services:
             DB_NAME: ${API_DB_NAME}
             DB_HOST: db
             DB_PORT: ${DB_PORT}
-            FRONTEND_URL: frontend
+            FRONTEND_URL: "http://localhost:${FRONTEND_PORT}"
             REDIS_HOST: redis
             REDIS_PORT: ${REDIS_PORT}
             JWT_SECRET: ${API_JWT_SECRET}
@@ -31,25 +32,27 @@ services:
         depends_on:
             - db
             - redis
-    # frontend:
-    #     build:
-    #         context: .
-    #         dockerfile: ./apps/frontend/Dockerfile
-    #     ports:
-    #         - "80:80"
-    #     volumes:
-    #         - .:/app # Mounts the entire monorepo for live development
-    #         - shared_node_modules:/app/node_modules
-    #     environment:
-    #         NODE_ENV: ${NODE_ENV}
-    #         VITE_LOG_LEVEL: ${API_LOG_LEVEL}
-    #         VITE_API_BASE_URL: "http://api:${API_PORT}"
-    #         VITE_API_USER: ${FRONTEND_API_USER}
-    #         VITE_API_PASSWORD: ${FRONTEND_API_USER}
-    #     networks:
-    #         - comeback-network
-    #     depends_on:
-    #         - api
+    frontend:
+        build:
+            context: .
+            dockerfile: ./apps/frontend/Dockerfile
+        ports:
+            - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+        volumes:
+            - .:/usr/src/app # Mounts the entire monorepo for live development
+            - shared_node_modules:/app/node_modules
+        working_dir: /usr/src/app/apps/frontend
+        environment:
+            NODE_PORT: ${FRONTEND_PORT}
+            NODE_ENV: ${NODE_ENV}
+            VITE_LOG_LEVEL: ${API_LOG_LEVEL}
+            VITE_API_BASE_URL: "http://localhost:${API_PORT}"
+            VITE_API_USER: ${FRONTEND_API_USER}
+            VITE_API_PASSWORD: ${FRONTEND_API_PASSWORD}
+        networks:
+            - main-network
+        depends_on:
+            - api
     db:
         image: postgres:15
         environment:
