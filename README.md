@@ -33,6 +33,7 @@ A **PERN** stack JavaScript solution for comparing movie ratings, built with a M
     - [Cache Invalidations](#cache-invalidations)
     - [Scalability Consideration](#scalability-consideration)
 - [Other Considerations](#other-considerations)
+- [Improvements](#improvements)
 
 
 # Introduction
@@ -268,5 +269,12 @@ The backend API is designed as a `stateless` application, making it well-suited 
    - **Centralized Schema Definitions**: The platform utilizes centralized schemas defined with Typebox to ensure type safety and consistency across both frontend and backend applications. This approach standardizes data structures and validation rules, promoting uniformity and reducing discrepancies throughout the platform. By using a shared schema definition, the system ensures that data adheres to the same format and constraints, enhancing data integrity and simplifying maintenance.
 
 
+# Improvements
 
-
+1. Testings (Unit, Integrations, E2E)
+2. Proper Documentations
+   - Source code comments
+   - API Documentations
+   - Other tech designs such as ERD, UMLs, etc.
+3. Other coding improvements adhering Industry best practices and standards.
+4. Local Load Balancing setup to handle proper integration of frontend to horizontally scaled backend API instances.
