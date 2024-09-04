@@ -6,7 +6,7 @@ FROM node:18 AS base
 WORKDIR /usr/src/app
 
 # Install dependencies using Yarn
-COPY ./package.json ../../yarn.lock ./
+COPY ./package.json ./yarn.lock ./
 RUN yarn install --frozen-lockfile --ignore-platform
 
 # Copy the rest of the application code
